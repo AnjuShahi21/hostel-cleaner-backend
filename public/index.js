@@ -11,7 +11,7 @@ app.use(cors());
 
 app.use(express.json());
 
-require('./Config/dataConfig');
+require('./config/dataConfig');
 
 const PORT = 3000;
 app.use('/user', checkAuth, router);
