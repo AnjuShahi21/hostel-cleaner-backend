@@ -1,5 +1,5 @@
 const {
-    Account
+    Account, CleanRequest, Feedback, Cleaner
 } = require('../models/data')
 
 
@@ -87,12 +87,12 @@ const findAccount = async (req, res) => {
 
     try {
         const user = req.body;
-        const response = await Account.findOne({   email: user.email  });
+        const response = await Account.findOne({ email: user.email });
 
         // Matching password
-        
+
         const isAuth = await findByCredentials(req.body.email, req.body.password);
-      
+
         const token = await generateAuthToken(response);
 
         if (!response || !isAuth || !token) {
@@ -149,7 +149,7 @@ const getProfileFull = async (req, res) => {
         data.tokens = undefined;
         data.aadhar = undefined;
         data.isAuth = undefined;
-       
+
         data.userType = undefined;
 
         if (!data) {
@@ -209,18 +209,180 @@ const findAndUpdateAccount = async (req, res) => {
         console.log(e.message);
         res.status(400).json({ Error: e.message })
     }
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+// get requests
+const getProfileData = async (req, res) => {
+
+    try {
+
+        const token = req.header('Authorization').replace('Bearer ', '');
+        const decode = jwt.verify(token, 'thisismynewcourse');
+
+        console.log(decode._id.toString());
+        const response = await Account.findById(decode._id.toString());
+        response.tokens = undefined;
+        console.log(response);
+
+        if (!response) {
+            throw new Error("Not Saved");
+        }
+
+        res.status(200).json(response);
+    } catch (e) {
+        console.log(e.message);
+        res.status(400).json({ Error: e.message })
+    }
 
 }
 
+// put requests
+// post requests
+const sendRequest = async (req, res) => {
+    try {
+        console.log("Anju")
+        const newCleanRequest = new CleanRequest(req.body);
+        const response = await newCleanRequest.save();
+        console.log("shahi")
+        if (!response) {
+            throw new Error("Not Saved");
+        }
+
+        res.status(200).json(response);
+    } catch (e) {
+        console.log(e.message);
+        res.status(400).json({ Error: e.message })
+    }
+}
+
+
+const sendFeedback = async (req, res) => {
+
+    try {
+
+        const newFeedback = new Feedback(req.body);
+        const response = await newFeedback.save();
+
+        if (!response) {
+            throw new Error("Not Saved");
+        }
+
+        res.status(200).json(response);
+    } catch (e) {
+        console.log(e.message);
+        res.status(400).json({ Error: e.message })
+    }
+
+}
+
+
+const allotCleaner = async (req, res) => {
+    try {
+        const selectedRequest = await CleanRequest.findOne({ req_id: req.body.req_id, reqStatus: 'pending' });
+        const selectedCleaner = await Cleaner.findOne({ cleaner_id: req.body.cleaner_id, status: 'free' });
+
+        if (!selectedRequest || !selectedCleaner) {
+            throw new Error("Not Saved");
+        }
+
+        const changedRequest = await CleanRequest.findOneAndUpdate({ req_id: selectedRequest["req_id"] }, { reqStatus: "approved" }, { new: true })
+        const changedCleaner = await Cleaner.findOneAndUpdate({ cleaner_id: selectedCleaner.cleaner_id }, { status: 'busy' }, { new: true })
+
+        if (!changedRequest || !changedCleaner) {
+            throw new Error("Not Saved");
+        }
+        res.status(200).json({ ...changedCleaner, ...changedRequest });
+    } catch (e) {
+        console.log(e.message);
+        res.status(400).json({ Error: e.message })
+    }
+}
+
+
+
+const requestComplete = async (req, res) => {
+
+    try {
+        const selectedRequest = await CleanRequest.findOne({ req_id: req.body.req_id });
+        if (!selectedRequest) {
+            throw new Error("Not Saved");
+        }
+        const changedRequest = await CleanRequest.findOneAndUpdate({ req_id: selectedRequest["req_id"] }, { reqStatus: "completed" }, { new: true })
+
+        if (!changedRequest) {
+            throw new Error("Not Saved");
+        }
+        res.status(200).json(changedRequest);
+    } catch (e) {
+        console.log(e.message);
+        res.status(400).json({ Error: e.message })
+    }
+}
+
+
+const addNewCleaner = async (req, res) => {
+    try {
+        const newCleaner = new Cleaner(req.body);
+        const response = await newCleaner.save();
+
+        if (!response) {
+            throw new Error("Not Saved");
+        }
+
+        res.status(200).json(response);
+    } catch (e) {
+        console.log(e.message);
+        res.status(400).json({ Error: e.message })
+    }
+}
+
+const verifyStudent = async (req, res) => {
+    try {
+        const email = req.body.email;
+        const changedStatus = await Account.findOneAndUpdate({ email, status: "pending" }, { status: "verified" }, { new: true })
+        if (!changedStatus) {
+
+            throw new Error("Not Saved");
+        }
+        changedStatus.password = undefined;
+        changedStatus.tokens = undefined;
+
+        res.status(200).json(changedStatus);
+    } catch (e) {
+        console.log(e.message);
+        res.status(400).json({ Error: e.message })
+    }
+
+}
+
+
+
+// delete requests
+
+
 module.exports = {
-    
+
     addAccount,
-    
+
     deleteAccountByMail,
     findAndUpdateAccount,
     findAccount,
     auth,
     getProfileOverview,
     getProfileFull,
-    
+    //////////////////////////////////////////////////////
+    getProfileData,
+
+    sendRequest,
+    sendFeedback,
+
+    allotCleaner,
+    requestComplete,
+    addNewCleaner,
+    verifyStudent
+
 }

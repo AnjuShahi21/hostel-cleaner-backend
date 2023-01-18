@@ -1,31 +1,62 @@
 
 // All the user actions like update, delete etc here
+const { request } = require('express');
 const express = require('express');
-const router = express.Router();
+const { get } = require('mongoose');
+const userRouter = express.Router();
 const { 
     
     addAccount, 
     deleteAccountByMail,
     findAndUpdateAccount,
     getProfileFull,
+    getProfileData,
+
+    sendRequest,
+    sendFeedback,
+    allotCleaner
+   
    
 } = require('../controllers/db');
 
 // Adding Data to Database
 
-router.post('/addAccount', addAccount);
+userRouter.post('/addAccount', addAccount);
 
 
 // Getting Data from Database
 
-router.get('/profileFull/:id', getProfileFull);
+userRouter.get('/profileFull/:id', getProfileFull);
 
 
 // Deleting Data from Database
 
-router.delete('/deleteAccountByMail/:mail', deleteAccountByMail)
+userRouter.delete('/deleteAccountByMail/:mail', deleteAccountByMail)
 
 // Updating Data in Database
-router.put('/findByMailAndUpdate', findAndUpdateAccount);
+userRouter.put('/findByMailAndUpdate', findAndUpdateAccount);
 
-module.exports = router;
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// get request
+userRouter.get('/getProfileData', getProfileData);
+
+
+
+// post requestendRequest
+userRouter.post('/sendRequest', sendRequest);
+userRouter.post('/sendFeedback', sendFeedback);
+
+userRouter.post('/allotCleaner', allotCleaner);
+
+// put request
+
+
+// delete request
+
+
+
+
+module.exports = userRouter;
