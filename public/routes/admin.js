@@ -8,6 +8,8 @@ const {
     deleteAccountByMail,
     findAndUpdateAccount,
     getProfileFull,
+    getSuggestion,
+    getComplaint,
    
 ////////////////////////////////////////////////////////
     allotCleaner,
@@ -39,6 +41,8 @@ adminRouter.put('/findByMailAndUpdate', findAndUpdateAccount);
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 //get request-->>
+adminRouter.get('/getSuggestion',getSuggestion);
+adminRouter.get('/getComplaint',getComplaint);
 
 
 //put request--->>
@@ -49,6 +53,8 @@ adminRouter.post('/allotCleaner', allotCleaner);
 adminRouter.post('/requestComplete', requestComplete);
 adminRouter.post('/addNewCleaner', addNewCleaner);
 adminRouter.post('/verifyStudent', verifyStudent);
+
+
 
 
 

@@ -11,7 +11,7 @@ const {
     findAndUpdateAccount,
     getProfileFull,
     getProfileData,
-
+ 
     sendRequest,
     sendFeedback,
     allotCleaner
@@ -43,13 +43,10 @@ userRouter.put('/findByMailAndUpdate', findAndUpdateAccount);
 // get request
 userRouter.get('/getProfileData', getProfileData);
 
-
-
 // post requestendRequest
 userRouter.post('/sendRequest', sendRequest);
 userRouter.post('/sendFeedback', sendFeedback);
 
-userRouter.post('/allotCleaner', allotCleaner);
 
 // put request
 

@@ -14,7 +14,7 @@ app.use(express.json());
 
 require('./config/dataConfig');
 
-const PORT = 8080;
+const PORT = 3000;
 //remove checkauth
 app.use('/user', userRouter);
 app.use('/admin', adminRouter);

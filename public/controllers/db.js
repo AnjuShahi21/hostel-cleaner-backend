@@ -8,8 +8,6 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-
-
 // Used to check password by matching with hashed password
 const findByCredentials = async (username, password) => {
     const user = await Account.findOne({ $or: [{ name: username }, { email: username }] });
@@ -193,8 +191,9 @@ const findAndUpdateAccount = async (req, res) => {
 
     try {
 
-        const filter = { email: req.body.mail };
-        delete req.body.mail;
+        const filter = { email: req.body.email };
+        delete req.body.email;
+        console.log(req.body.email);
 
         const update = { $set: req['body'] };
         const response = await Account.findOneAndUpdate(filter, update, { new: true });
@@ -217,21 +216,37 @@ const findAndUpdateAccount = async (req, res) => {
 
 // get requests
 const getProfileData = async (req, res) => {
-
     try {
-
         const token = req.header('Authorization').replace('Bearer ', '');
         const decode = jwt.verify(token, 'thisismynewcourse');
-
-        console.log(decode._id.toString());
         const response = await Account.findById(decode._id.toString());
         response.tokens = undefined;
-        console.log(response);
 
         if (!response) {
             throw new Error("Not Saved");
         }
+        console.log(response)
+        res.status(200).json(response);
+    } catch (e) {
 
+        console.log(e.message);
+
+        res.status(400).json({ Error: e.message })
+    }
+
+}
+
+
+
+const getSuggestion = async (req, res) => {
+    try {
+        const token = req.header('Authorization').replace('Bearer ', '');
+        const decode = jwt.verify(token, 'thisismynewcourse');
+        const response = await Feedback.find()
+        if (!response) {
+            throw new Error("Not Saved");
+        }
+        console.log(response)
         res.status(200).json(response);
     } catch (e) {
         console.log(e.message);
@@ -240,18 +255,38 @@ const getProfileData = async (req, res) => {
 
 }
 
+const getComplaint= async (req, res) => {
+    try {
+        const token = req.header('Authorization').replace('Bearer ', '');
+        const decode = jwt.verify(token, 'thisismynewcourse');
+        const response = await Feedback.find()
+        if (!response) {
+            throw new Error("Not Saved");
+        }
+        console.log(response)
+        res.status(200).json(response);
+    } catch (e) {
+        console.log(e.message);
+        res.status(400).json({ Error: e.message })
+    }
+
+}
+
+
+
+
 // put requests
 // post requests
 const sendRequest = async (req, res) => {
     try {
-        console.log("Anju")
+        const token = req.header('Authorization').replace('Bearer ', '');
+        const decode = jwt.verify(token, 'thisismynewcourse');
         const newCleanRequest = new CleanRequest(req.body);
         const response = await newCleanRequest.save();
         console.log("shahi")
         if (!response) {
             throw new Error("Not Saved");
         }
-
         res.status(200).json(response);
     } catch (e) {
         console.log(e.message);
@@ -263,14 +298,14 @@ const sendRequest = async (req, res) => {
 const sendFeedback = async (req, res) => {
 
     try {
-
+        const token = req.header('Authorization').replace('Bearer ', '');
+        const decode = jwt.verify(token, 'thisismynewcourse');
+        req.body.date = new Date();
         const newFeedback = new Feedback(req.body);
         const response = await newFeedback.save();
-
         if (!response) {
             throw new Error("Not Saved");
         }
-
         res.status(200).json(response);
     } catch (e) {
         console.log(e.message);
@@ -282,7 +317,7 @@ const sendFeedback = async (req, res) => {
 
 const allotCleaner = async (req, res) => {
     try {
-        const selectedRequest = await CleanRequest.findOne({ req_id: req.body.req_id, reqStatus: 'pending' });
+        const selectedRequest = await CleanRequest.findOne({ roll_no: req.body.roll_no, reqStatus: 'pending' });
         const selectedCleaner = await Cleaner.findOne({ cleaner_id: req.body.cleaner_id, status: 'free' });
 
         if (!selectedRequest || !selectedCleaner) {
@@ -359,15 +394,9 @@ const verifyStudent = async (req, res) => {
 
 }
 
-
-
 // delete requests
-
-
 module.exports = {
-
     addAccount,
-
     deleteAccountByMail,
     findAndUpdateAccount,
     findAccount,
@@ -376,6 +405,9 @@ module.exports = {
     getProfileFull,
     //////////////////////////////////////////////////////
     getProfileData,
+    getSuggestion,
+    getComplaint,
+
 
     sendRequest,
     sendFeedback,
