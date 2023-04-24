@@ -38,7 +38,7 @@ const account = new mongoose.Schema({
     },
     userType: {
         type: String,
-        default:"student"
+        default: "student"
     },
 
 
@@ -64,6 +64,9 @@ const cleanRequest = new mongoose.Schema({
     cleaningTime: {
         type: String,
         required: true
+    },
+    cleaner_id: {
+        type: String
     },
     reqStatus: {
         type: String,
@@ -102,12 +105,12 @@ const feedback = new mongoose.Schema({
         required: true
     },
     suggestion: {
-        type: String,
-        required: true
+        type: String
+
     },
     complaint: {
-        type: String,
-        required: true
+        type: String
+
     }
 
 })
@@ -126,15 +129,25 @@ const cleaner = new mongoose.Schema({
         type: String,
         required: true
     },
-   cleaner_id: {
+    cleaner_id: {
         type: Number,
-        required: true
+        unique: true
 
     },
-    hostel: {
-        type: String,
+    mobile_no: {
+        type: Number,
         required: true
     },
+
+    served: {
+        type: Number,
+        default: 0
+
+    },
+    alloted: {
+        type: Number,
+        default: 0
+    }
 })
 
 
@@ -147,10 +160,8 @@ const Account = new mongoose.model('Account', account);
 
 
 module.exports = {
-
     Account,
     CleanRequest,
-    Feedback, 
+    Feedback,
     Cleaner,
-
 }

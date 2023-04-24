@@ -11,6 +11,7 @@ const {
     findAndUpdateAccount,
     getProfileFull,
     getProfileData,
+    getUserWiseApprovedCleaner,
  
     sendRequest,
     sendFeedback,
@@ -46,14 +47,7 @@ userRouter.get('/getProfileData', getProfileData);
 // post requestendRequest
 userRouter.post('/sendRequest', sendRequest);
 userRouter.post('/sendFeedback', sendFeedback);
-
-
-// put request
-
-
-// delete request
-
-
+userRouter.post('/getUserWiseApprovedCleaner', getUserWiseApprovedCleaner);
 
 
 module.exports = userRouter;
